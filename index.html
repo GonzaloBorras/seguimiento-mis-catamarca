@@ -197,6 +197,14 @@
         <option value="REV">A revisar</option>
       </select>
     </div>
+    <div>
+      <label>N&#176; Activo</label>
+      <select id="selActivo">
+        <option value="ALL">Todos</option>
+        <option value="CON">Con n&#250;mero</option>
+        <option value="SIN">Sin n&#250;mero</option>
+      </select>
+    </div>
   </div>
   <div class="btn-row">
     <button id="btnReset" title="Ver todos los PDV">Ver todo</button>
@@ -299,6 +307,7 @@ var selVendedor = document.getElementById('selVendedor');
 var selLocalidad = document.getElementById('selLocalidad');
 var selCanal = document.getElementById('selCanal');
 var selEstado = document.getElementById('selEstado');
+var selActivo = document.getElementById('selActivo');
 var busqueda = document.getElementById('busqueda');
 var stats = document.getElementById('stats');
 var kpiBar = document.getElementById('kpiBar');
@@ -336,14 +345,21 @@ function dibujarZona(visibles){
   zonaLayer.bindPopup('<b>' + esc(v) + '</b> &mdash; ' + visibles.length + ' PDV en su zona');
 }
 
+function tieneActivo(d){
+  return (d[12] && d[12] !== 'No hay datos' && d[12] !== 'nan' && d[12] !== '') ||
+         (d[13] && d[13] !== 'No hay datos' && d[13] !== 'nan' && d[13] !== '');
+}
+
 function coincide(d){
-  var v = selVendedor.value, l = selLocalidad.value, c = selCanal.value, e = selEstado.value;
+  var v = selVendedor.value, l = selLocalidad.value, c = selCanal.value, e = selEstado.value, a = selActivo.value;
   if (v !== 'ALL' && d[4] !== v) return false;
   if (l !== 'ALL' && d[5] !== l) return false;
   if (c !== 'ALL' && d[6] !== c) return false;
   if (e === 'VIS' && !d[7]) return false;
   if (e === 'PEND' && d[7]) return false;
   if (e === 'REV' && !d[9]) return false;
+  if (a === 'CON' && !tieneActivo(d)) return false;
+  if (a === 'SIN' && tieneActivo(d)) return false;
   var q = busqueda.value.trim().toLowerCase();
   if (q) {
     if ((d[2] + ' ' + d[3] + ' ' + d[11]).toLowerCase().indexOf(q) === -1) return false;
@@ -357,12 +373,13 @@ function aplicarFiltro(encuadrar){
   DATOS.forEach(function(d, i){
     if (coincide(d)) { visibles.push(i); group.addLayer(markers[i]); }
   });
-  var fv = 0, fp = 0, fr = 0, fvis = 0;
+  var fv = 0, fp = 0, fr = 0, fvis = 0, factivos = 0;
   visibles.forEach(function(i){
     var d = DATOS[i];
     fvis += d[8];
     if (d[9]) fr++;
     if (d[7]) fv++; else fp++;
+    if (tieneActivo(d)) factivos++;
   });
   var pct = visibles.length ? (fv / visibles.length * 100).toFixed(1) : 0;
   stats.innerHTML =
@@ -370,10 +387,12 @@ function aplicarFiltro(encuadrar){
     '<span class="k">Visitados:</span> <span class="verde">' + fv + '</span> (' + fvis + ' visitas)<br>' +
     '<span class="k">Pendientes:</span> <span class="rojo">' + fp + '</span><br>' +
     '<span class="k">A revisar:</span> <span style="color:#f97316">' + fr + '</span><br>' +
+    '<span class="k">Con N&#176; Activo:</span> <span style="color:#2563eb">' + factivos + '</span><br>' +
     '<span class="k">Avance:</span> ' + pct + '%';
   kpiBar.innerHTML =
     'Pendientes: <span class="p">' + fp + '</span> &nbsp;|&nbsp; Visitados: <span class="v">' + fv +
     '</span> &nbsp;|&nbsp; Avance: ' + pct + '%' +
+    ' &nbsp;|&nbsp; N&#176; Activo: <span class="n">' + factivos + '</span>' +
     (fr ? ' &nbsp;|&nbsp; A revisar: <span class="r">' + fr + '</span>' : '');
   actualizarLista();
   dibujarZona(visibles);
@@ -413,7 +432,7 @@ function irA(i){
 }
 
 function reset(){
-  selVendedor.value = 'ALL'; selLocalidad.value = 'ALL'; selCanal.value = 'ALL'; selEstado.value = 'ALL';
+  selVendedor.value = 'ALL'; selLocalidad.value = 'ALL'; selCanal.value = 'ALL'; selEstado.value = 'ALL'; selActivo.value = 'ALL';
   busqueda.value = '';
   aplicarFiltro(true);
 }
@@ -429,6 +448,7 @@ selVendedor.addEventListener('change', function(){ aplicarFiltro(true); });
 selLocalidad.addEventListener('change', function(){ aplicarFiltro(true); });
 selCanal.addEventListener('change', function(){ aplicarFiltro(true); });
 selEstado.addEventListener('change', function(){ aplicarFiltro(true); });
+selActivo.addEventListener('change', function(){ aplicarFiltro(true); });
 document.getElementById('btnReset').addEventListener('click', reset);
 document.getElementById('btnRefrescar').addEventListener('click', function(){
   location.reload();
