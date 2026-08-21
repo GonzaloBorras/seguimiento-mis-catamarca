@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 20/08/2026 21:26</title>
+<title>MIS Catamarca 2026 - 20/08/2026 21:36</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -47,18 +47,18 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
   font-weight:700;font-size:11px;flex-shrink:0;
 }
 
-/* --- Bottom sheet --- */
+/* --- Bottom sheet (shared) --- */
 .sheet{
-  position:fixed;bottom:0;left:0;right:0;z-index:1000;
-  background:#fff;border-radius:16px 16px 0 0;
+  position:fixed;left:0;right:0;z-index:1000;
+  background:#fff;
   box-shadow:0 -4px 20px rgba(0,0,0,.15);
-  max-height:85vh;display:flex;flex-direction:column;
+  display:flex;flex-direction:column;
   transition:transform .3s cubic-bezier(.4,0,.2,1);
 }
-.sheet.closed{transform:translateY(calc(100% - 52px))}
+.sheet.closed{transform:translateY(calc(100% - 48px))}
 .sheet.drag{transition:none}
 .sheet-handle{
-  padding:10px 0 6px;display:flex;justify-content:center;align-items:center;
+  padding:8px 0 4px;display:flex;justify-content:center;align-items:center;
   cursor:pointer;flex-shrink:0;
 }
 .sheet-handle::after{
@@ -66,18 +66,54 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
 }
 .sheet-head{
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px 8px;flex-shrink:0;
+  padding:0 16px 6px;flex-shrink:0;
 }
-.sheet-head span{font-weight:700;font-size:14px;color:#111}
+.sheet-head span{font-weight:700;font-size:13px;color:#111}
 .sheet-head .pill{
-  padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;
+  padding:3px 8px;border-radius:10px;font-size:10px;font-weight:600;
   background:#f3f4f6;color:#555;cursor:pointer;border:none;
 }
 .sheet-head .pill:active{background:#e5e7eb}
 .sheet-body{
-  padding:0 16px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:0 16px 12px;overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;flex:1;min-height:0;
 }
+
+/* --- Panel Detalles (above Filtros) --- */
+#sheetDetalles{
+  border-radius:14px 14px 0 0;
+  max-height:50vh;
+}
+#sheetDetalles .sheet-body{max-height:40vh}
+
+/* --- Panel Filtros (at bottom) --- */
+#sheetFiltros{
+  border-radius:14px 14px 0 0;
+  max-height:70vh;
+  bottom:0;
+}
+#sheetFiltros .sheet-body{max-height:55vh}
+
+/* --- Avance bar --- */
+.avance-wrap{margin-bottom:8px}
+.avance-track{
+  height:20px;background:#f3f4f6;border-radius:10px;overflow:hidden;
+  position:relative;
+}
+.avance-fill{
+  height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);
+  border-radius:10px;transition:width .4s ease;
+}
+.avance-label{
+  position:absolute;top:0;left:0;right:0;text-align:center;
+  font-size:11px;font-weight:700;line-height:20px;color:#374151;
+}
+
+/* --- Vendor bars --- */
+.vbar{margin-bottom:4px}
+.vbar-top{display:flex;justify-content:space-between;font-size:10px;color:#666;margin-bottom:1px}
+.vbar-track{height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden}
+.vbar-fill{height:100%;background:#16a34a;border-radius:3px;transition:width .3s}
 
 /* --- Search --- */
 .search-wrap{position:relative;margin-bottom:8px}
@@ -117,37 +153,6 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
 .actions .btn-refresh{background:#fef2f2;color:#991b1b}
 .actions button:active{opacity:.7}
 
-/* --- Avance bar --- */
-.avance-wrap{margin-bottom:10px}
-.avance-track{
-  height:20px;background:#f3f4f6;border-radius:10px;overflow:hidden;
-  position:relative;
-}
-.avance-fill{
-  height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);
-  border-radius:10px;transition:width .4s ease;
-}
-.avance-label{
-  position:absolute;top:0;left:0;right:0;text-align:center;
-  font-size:11px;font-weight:700;line-height:20px;color:#374151;
-}
-
-/* --- Stats collapsible --- */
-.stats-toggle{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 0;cursor:pointer;border-top:1px solid #f0f0f0;
-}
-.stats-toggle span{font-size:12px;font-weight:600;color:#555}
-.stats-toggle .arrow{font-size:10px;color:#999;transition:transform .2s}
-.stats-toggle.open .arrow{transform:rotate(180deg)}
-.stats-body{display:none;padding-top:4px;font-size:12px;line-height:1.6}
-.stats-body.open{display:block}
-.stats-body .k{font-weight:600;color:#374151}
-.vbar{margin-bottom:4px}
-.vbar-top{display:flex;justify-content:space-between;font-size:10px;color:#666;margin-bottom:1px}
-.vbar-track{height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden}
-.vbar-fill{height:100%;background:#16a34a;border-radius:3px;transition:width .3s}
-
 /* --- Floating controls --- */
 .ctrl-fab{
   position:fixed;z-index:1000;
@@ -160,9 +165,8 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
 .fab-heat{bottom:68px;left:12px;background:#fff;color:#f97316}
 .fab-heat.on{background:#f97316;color:#fff}
 .fab-legend{bottom:68px;right:12px;background:#fff;color:#374151}
-.fab-layer{bottom:120px;right:12px;background:#fff;color:#374151}
 
-/* --- Legend bar (bottom) --- */
+/* --- Legend bar --- */
 .legend-bar{
   position:fixed;bottom:52px;left:12px;right:12px;z-index:999;
   background:rgba(255,255,255,.92);backdrop-filter:blur(6px);
@@ -252,8 +256,6 @@ body.dark .actions .btn-csv{background:#064e3b;color:#6ee7b7}
 body.dark .actions .btn-refresh{background:#450a0a;color:#fca5a5}
 body.dark .avance-track{background:#1f2937}
 body.dark .avance-label{color:#d1d5db}
-body.dark .stats-toggle{border-color:#2b3441}
-body.dark .stats-toggle span{color:#9ca3af}
 body.dark .vbar-track{background:#1f2937}
 body.dark .vbar-top{color:#9ca3af}
 body.dark .ctrl-fab{background:#1f2937;color:#d1d5db}
@@ -285,10 +287,12 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
   .sheet-handle{display:none}
   .sheet-head{padding:8px 12px 6px}
   .sheet-body{padding:0 12px 12px}
+  #sheetDetalles{top:12px}
+  #sheetFiltros{top:12px;left:304px}
   .kpi-strip{border-radius:0 0 12px 12px}
   .ctrl-fab.fab-legend{display:none}
   .legend-bar{display:flex!important;position:absolute;bottom:12px;left:12px;right:auto;width:auto;border-radius:8px}
-  .fab-heat{bottom:auto;top:12px;left:300px}
+  .fab-heat{bottom:auto;top:12px;left:600px}
   .lista-fs{
     position:absolute;top:12px;right:12px;left:auto;bottom:auto;
     width:340px;border-radius:12px;max-height:calc(100vh - 24px);
@@ -300,13 +304,27 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
 <div id="map"></div>
 <div class="kpi-strip" id="kpiStrip"></div>
 
-<div class="sheet" id="sheet">
-  <div class="sheet-handle" id="sheetHandle"></div>
+<!-- Panel Detalles por vendedor -->
+<div class="sheet" id="sheetDetalles">
+  <div class="sheet-handle" id="handleDetalles"></div>
+  <div class="sheet-head">
+    <span>Avance por vendedor</span>
+    <button class="pill" id="btnDetalles">Ocultar</button>
+  </div>
+  <div class="sheet-body" id="bodyDetalles">
+    <div class="avance-wrap" id="avanceWrap"></div>
+    <div id="statsBody"></div>
+  </div>
+</div>
+
+<!-- Panel Filtros -->
+<div class="sheet" id="sheetFiltros">
+  <div class="sheet-handle" id="handleFiltros"></div>
   <div class="sheet-head">
     <span>Filtros</span>
-    <button class="pill" id="btnSheetToggle">Ocultar</button>
+    <button class="pill" id="btnFiltros">Ocultar</button>
   </div>
-  <div class="sheet-body" id="sheetBody">
+  <div class="sheet-body" id="bodyFiltros">
     <div class="search-wrap">
       <input type="text" id="busqueda" placeholder="Buscar nombre, direcci&#243;n o ID..." autocomplete="off">
       <button class="x" id="btnLimpiar">&#10005;</button>
@@ -366,9 +384,6 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
       <button class="btn-csv" id="btnExport">XLSX</button>
       <button class="btn-refresh" id="btnRefresh">Refrescar</button>
     </div>
-    <div class="avance-wrap" id="avanceWrap"></div>
-    <div class="stats-toggle" id="statsToggle"><span>Detalle por vendedor</span><span class="arrow">&#9660;</span></div>
-    <div class="stats-body" id="statsBody"></div>
   </div>
 </div>
 
@@ -596,6 +611,62 @@ function exportXLSX(){
   XLSX.writeFile(wb,'pdv_cat_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 
+/* ---- Panel toggle logic ---- */
+var sheetF=document.getElementById('sheetFiltros');
+var sheetD=document.getElementById('sheetDetalles');
+var isMobile=window.innerWidth<768;
+
+function posDetalles(){
+  if(isMobile){
+    var hF=sheetF.offsetHeight||48;
+    sheetD.style.bottom=hF+'px';
+  }
+}
+
+function toggleSheet(sheet,btn,closed){
+  if(closed){sheet.classList.remove('closed');btn.textContent='Ocultar'}
+  else{sheet.classList.add('closed');btn.textContent='Mostrar'}
+  if(isMobile)setTimeout(posDetalles,350);
+}
+
+document.getElementById('btnFiltros').addEventListener('click',function(){
+  toggleSheet(sheetF,this,sheetF.classList.contains('closed'));
+});
+document.getElementById('handleFiltros').addEventListener('click',function(){
+  var c=sheetF.classList.toggle('closed');
+  document.getElementById('btnFiltros').textContent=c?'Mostrar':'Ocultar';
+  if(isMobile)setTimeout(posDetalles,350);
+});
+document.getElementById('btnDetalles').addEventListener('click',function(){
+  toggleSheet(sheetD,this,sheetD.classList.contains('closed'));
+});
+document.getElementById('handleDetalles').addEventListener('click',function(){
+  var c=sheetD.classList.toggle('closed');
+  document.getElementById('btnDetalles').textContent=c?'Mostrar':'Ocultar';
+});
+
+/* Sheet drag */
+function makeDraggable(sheet,handle,btnId){
+  var startY=0,startH=0,dragging=false;
+  handle.addEventListener('touchstart',function(e){dragging=true;startY=e.touches[0].clientY;startH=sheet.offsetHeight;sheet.classList.add('drag')},{passive:true});
+  window.addEventListener('touchmove',function(e){
+    if(!dragging)return;
+    var dy=startY-e.touches[0].clientY;
+    sheet.style.maxHeight=Math.max(48,startH+dy)+'px';
+    if(isMobile)posDetalles();
+  },{passive:true});
+  window.addEventListener('touchend',function(){
+    if(!dragging)return;dragging=false;sheet.classList.remove('drag');sheet.style.maxHeight='';
+    if(sheet.offsetHeight<120){sheet.classList.add('closed');document.getElementById(btnId).textContent='Mostrar'}
+    if(isMobile)posDetalles();
+  });
+}
+makeDraggable(sheetF,document.getElementById('handleFiltros'),'btnFiltros');
+makeDraggable(sheetD,document.getElementById('handleDetalles'),'btnDetalles');
+
+window.addEventListener('resize',function(){isMobile=window.innerWidth<768;if(isMobile)posDetalles()});
+
+/* Filter events */
 var debounce=null;
 elB.addEventListener('input',function(){clearTimeout(debounce);debounce=setTimeout(function(){aplicarFiltro(false)},200)});
 elB.addEventListener('keydown',function(e){if(e.key==='Enter')aplicarFiltro(true)});
@@ -604,25 +675,6 @@ document.getElementById('btnLimpiar').addEventListener('click',function(){elB.va
 document.getElementById('btnReset').addEventListener('click',reset);
 document.getElementById('btnExport').addEventListener('click',exportXLSX);
 document.getElementById('btnRefresh').addEventListener('click',function(){location.reload()});
-
-/* Sheet toggle */
-var sheet=document.getElementById('sheet');
-document.getElementById('btnSheetToggle').addEventListener('click',function(){
-  var c=sheet.classList.toggle('closed');
-  this.textContent=c?'Filtros':'Ocultar';
-});
-document.getElementById('sheetHandle').addEventListener('click',function(){
-  var c=sheet.classList.toggle('closed');
-  document.getElementById('btnSheetToggle').textContent=c?'Filtros':'Ocultar';
-});
-
-/* Sheet drag */
-(function(){
-  var h=document.getElementById('sheetHandle'),startY=0,startH=0,dragging=false;
-  h.addEventListener('touchstart',function(e){dragging=true;startY=e.touches[0].clientY;startH=sheet.offsetHeight;sheet.classList.add('drag')},{passive:true});
-  window.addEventListener('touchmove',function(e){if(!dragging)return;var dy=startY-e.touches[0].clientY;sheet.style.maxHeight=Math.max(52,startH+dy)+'px'},{passive:true});
-  window.addEventListener('touchend',function(){if(!dragging)return;dragging=false;sheet.classList.remove('drag');sheet.style.maxHeight='';if(sheet.offsetHeight<150){sheet.classList.add('closed');document.getElementById('btnSheetToggle').textContent='Filtros'}})
-})();
 
 /* Lista */
 document.getElementById('btnLista').addEventListener('click',function(){document.getElementById('listaFs').classList.add('show');actualizarLista()});
@@ -646,6 +698,7 @@ document.addEventListener('keydown',function(e){
 });
 
 aplicarFiltro(true);
+if(isMobile)setTimeout(posDetalles,100);
 </script>
 </body>
 </html>
