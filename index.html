@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 20/08/2026 21:49</title>
+<title>MIS Catamarca 2026 - 20/08/2026 21:55</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -293,10 +293,10 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
   <!-- Panel Detalles por vendedor -->
   <div class="sheet" id="sheetDetalles">
     <div class="sheet-handle" id="handleDetalles"></div>
-    <div class="sheet-head">
-      <span>Avance por vendedor</span>
-      <button class="pill" id="btnDetalles">Ocultar</button>
-    </div>
+  <div class="sheet-head">
+    <span>Avance por vendedor <span id="pctBadge" style="padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;background:#dcfce7;color:#166534;margin-left:6px"></span></span>
+    <button class="pill" id="btnDetalles">Ocultar</button>
+  </div>
     <div class="sheet-body" id="bodyDetalles">
       <div class="avance-wrap" id="avanceWrap"></div>
       <div id="statsBody"></div>
@@ -537,12 +537,12 @@ function aplicarFiltro(encuadrar){
     var vn=d[4];if(!vs[vn])vs[vn]={t:0,v:0};vs[vn].t++;if(d[7])vs[vn].v++;
   });
   var pct=visiblesCache.length?(fv/visiblesCache.length*100).toFixed(1):0;
+  document.getElementById('pctBadge').textContent=pct+'%';
   elKpi.innerHTML=
     '<span class="kpi-chip total">'+DATOS.length+' PDV</span>'+
     '<span class="kpi-chip g">'+fv+' visitados</span>'+
     '<span class="kpi-chip r">'+fp+' pend.</span>'+
-    (fr?'<span class="kpi-chip o">'+fr+' revisar</span>':'')+
-    '<span class="kpi-avance">'+pct+'%</span>';
+    (fr?'<span class="kpi-chip o">'+fr+' revisar</span>':'');
   elAvance.innerHTML='<div class="avance-track"><div class="avance-fill" style="width:'+pct+'%"></div><div class="avance-label">'+fv+' / '+visiblesCache.length+' ('+pct+'%)</div></div>';
   var vk=Object.keys(vs).sort();
   if(vk.length>1&&vk.length<=30){
@@ -679,6 +679,8 @@ document.addEventListener('keydown',function(e){
 });
 
 aplicarFiltro(true);
+closeSheet(sheetF,document.getElementById('btnFiltros'));
+closeSheet(sheetD,document.getElementById('btnDetalles'));
 </script>
 </body>
 </html>
