@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 20/08/2026 21:36</title>
+<title>MIS Catamarca 2026 - 20/08/2026 21:45</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -47,15 +47,19 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
   font-weight:700;font-size:11px;flex-shrink:0;
 }
 
-/* --- Bottom sheet (shared) --- */
-.sheet{
-  position:fixed;left:0;right:0;z-index:1000;
-  background:#fff;
-  box-shadow:0 -4px 20px rgba(0,0,0,.15);
+/* --- Bottom stack --- */
+.bottom-stack{
+  position:fixed;bottom:0;left:0;right:0;z-index:1000;
   display:flex;flex-direction:column;
-  transition:transform .3s cubic-bezier(.4,0,.2,1);
 }
-.sheet.closed{transform:translateY(calc(100% - 48px))}
+
+/* --- Sheet (shared) --- */
+.sheet{
+  background:#fff;
+  box-shadow:0 -2px 12px rgba(0,0,0,.12);
+  overflow:hidden;
+  transition:height .3s cubic-bezier(.4,0,.2,1);
+}
 .sheet.drag{transition:none}
 .sheet-handle{
   padding:8px 0 4px;display:flex;justify-content:center;align-items:center;
@@ -76,23 +80,8 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
 .sheet-head .pill:active{background:#e5e7eb}
 .sheet-body{
   padding:0 16px 12px;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;flex:1;min-height:0;
+  overscroll-behavior:contain;
 }
-
-/* --- Panel Detalles (above Filtros) --- */
-#sheetDetalles{
-  border-radius:14px 14px 0 0;
-  max-height:50vh;
-}
-#sheetDetalles .sheet-body{max-height:40vh}
-
-/* --- Panel Filtros (at bottom) --- */
-#sheetFiltros{
-  border-radius:14px 14px 0 0;
-  max-height:70vh;
-  bottom:0;
-}
-#sheetFiltros .sheet-body{max-height:55vh}
 
 /* --- Avance bar --- */
 .avance-wrap{margin-bottom:8px}
@@ -278,21 +267,15 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
 
 /* --- Desktop override --- */
 @media(min-width:768px){
-  .sheet{
+  .bottom-stack{
     position:absolute;top:12px;left:12px;right:auto;bottom:auto;
-    width:280px;border-radius:12px;
-    max-height:calc(100vh - 24px);
+    width:280px;flex-direction:column;
   }
-  .sheet.closed{transform:none}
-  .sheet-handle{display:none}
-  .sheet-head{padding:8px 12px 6px}
-  .sheet-body{padding:0 12px 12px}
-  #sheetDetalles{top:12px}
-  #sheetFiltros{top:12px;left:304px}
+  .sheet{border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.18)}
   .kpi-strip{border-radius:0 0 12px 12px}
   .ctrl-fab.fab-legend{display:none}
   .legend-bar{display:flex!important;position:absolute;bottom:12px;left:12px;right:auto;width:auto;border-radius:8px}
-  .fab-heat{bottom:auto;top:12px;left:600px}
+  .fab-heat{bottom:auto;top:12px;left:300px}
   .lista-fs{
     position:absolute;top:12px;right:12px;left:auto;bottom:auto;
     width:340px;border-radius:12px;max-height:calc(100vh - 24px);
@@ -304,33 +287,34 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
 <div id="map"></div>
 <div class="kpi-strip" id="kpiStrip"></div>
 
-<!-- Panel Detalles por vendedor -->
-<div class="sheet" id="sheetDetalles">
-  <div class="sheet-handle" id="handleDetalles"></div>
-  <div class="sheet-head">
-    <span>Avance por vendedor</span>
-    <button class="pill" id="btnDetalles">Ocultar</button>
-  </div>
-  <div class="sheet-body" id="bodyDetalles">
-    <div class="avance-wrap" id="avanceWrap"></div>
-    <div id="statsBody"></div>
-  </div>
-</div>
-
-<!-- Panel Filtros -->
-<div class="sheet" id="sheetFiltros">
-  <div class="sheet-handle" id="handleFiltros"></div>
-  <div class="sheet-head">
-    <span>Filtros</span>
-    <button class="pill" id="btnFiltros">Ocultar</button>
-  </div>
-  <div class="sheet-body" id="bodyFiltros">
-    <div class="search-wrap">
-      <input type="text" id="busqueda" placeholder="Buscar nombre, direcci&#243;n o ID..." autocomplete="off">
-      <button class="x" id="btnLimpiar">&#10005;</button>
+<div class="bottom-stack" id="bottomStack">
+  <!-- Panel Detalles por vendedor -->
+  <div class="sheet" id="sheetDetalles">
+    <div class="sheet-handle" id="handleDetalles"></div>
+    <div class="sheet-head">
+      <span>Avance por vendedor</span>
+      <button class="pill" id="btnDetalles">Ocultar</button>
     </div>
-    <div class="filtros">
-      <div><label>Vendedor</label><select id="selVendedor"><option value="ALL">Todos</option><option value="0">0</option>
+    <div class="sheet-body" id="bodyDetalles">
+      <div class="avance-wrap" id="avanceWrap"></div>
+      <div id="statsBody"></div>
+    </div>
+  </div>
+
+  <!-- Panel Filtros -->
+  <div class="sheet" id="sheetFiltros">
+    <div class="sheet-handle" id="handleFiltros"></div>
+    <div class="sheet-head">
+      <span>Filtros</span>
+      <button class="pill" id="btnFiltros">Ocultar</button>
+    </div>
+    <div class="sheet-body" id="bodyFiltros">
+      <div class="search-wrap">
+        <input type="text" id="busqueda" placeholder="Buscar nombre, direcci&#243;n o ID..." autocomplete="off">
+        <button class="x" id="btnLimpiar">&#10005;</button>
+      </div>
+      <div class="filtros">
+        <div><label>Vendedor</label><select id="selVendedor"><option value="ALL">Todos</option><option value="0">0</option>
 <option value="ARAGON JOSE">ARAGON JOSE</option>
 <option value="CARRIZO MAXIMILIANO">CARRIZO MAXIMILIANO</option>
 <option value="GABRIEL MAYA">GABRIEL MAYA</option>
@@ -343,7 +327,7 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
 <option value="RODRIGUEZ ENZO OSVALDO">RODRIGUEZ ENZO OSVALDO</option>
 <option value="SORIA MAURO ALEJANDRO">SORIA MAURO ALEJANDRO</option>
 <option value="VENDEDOR GENERICO">VENDEDOR GENERICO</option></select></div>
-      <div><label>Localidad</label><select id="selLocalidad"><option value="ALL">Todas</option><option value="Banda de Varela">Banda de Varela</option>
+        <div><label>Localidad</label><select id="selLocalidad"><option value="ALL">Todas</option><option value="Banda de Varela">Banda de Varela</option>
 <option value="Bañado de Ovanta">Bañado de Ovanta</option>
 <option value="Belén">Belén</option>
 <option value="Capayán">Capayán</option>
@@ -368,21 +352,22 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
 <option value="San Martin">San Martin</option>
 <option value="Valle Viejo">Valle Viejo</option>
 <option value="Villa Las Pirquitas">Villa Las Pirquitas</option></select></div>
-      <div><label>Canal</label><select id="selCanal"><option value="ALL">Todos</option><option value="Autoservicio">Autoservicio</option>
+        <div><label>Canal</label><select id="selCanal"><option value="ALL">Todos</option><option value="Autoservicio">Autoservicio</option>
 <option value="Mayorista">Mayorista</option>
 <option value="OTROS">OTROS</option>
 <option value="On Premise">On Premise</option>
 <option value="Petroleras">Petroleras</option>
 <option value="Tradicional">Tradicional</option></select></div>
-      <div><label>Estado</label><select id="selEstado"><option value="ALL">Todos</option><option value="VIS">Visitados</option><option value="PEND">Pendientes</option><option value="REV">A revisar</option></select></div>
-      <div><label>N&#176; Activo</label><select id="selActivo"><option value="ALL">Todos</option><option value="CON">Con n&#250;mero</option><option value="SIN">Sin n&#250;mero</option></select></div>
-      <div><label>Visita</label><select id="selFecha"><option value="ALL">Todas</option><option value="7">&#218;lt. 7 d&#237;as</option><option value="15">&#218;lt. 15 d&#237;as</option><option value="30">&#218;lt. 30 d&#237;as</option><option value="60">&#218;lt. 60 d&#237;as</option><option value="90">&#218;lt. 90 d&#237;as</option><option value="SIN">Sin visita</option></select></div>
-    </div>
-    <div class="actions">
-      <button class="btn-reset" id="btnReset">Ver todo</button>
-      <button class="btn-lista" id="btnLista">Lista</button>
-      <button class="btn-csv" id="btnExport">XLSX</button>
-      <button class="btn-refresh" id="btnRefresh">Refrescar</button>
+        <div><label>Estado</label><select id="selEstado"><option value="ALL">Todos</option><option value="VIS">Visitados</option><option value="PEND">Pendientes</option><option value="REV">A revisar</option></select></div>
+        <div><label>N&#176; Activo</label><select id="selActivo"><option value="ALL">Todos</option><option value="CON">Con n&#250;mero</option><option value="SIN">Sin n&#250;mero</option></select></div>
+        <div><label>Visita</label><select id="selFecha"><option value="ALL">Todas</option><option value="7">&#218;lt. 7 d&#237;as</option><option value="15">&#218;lt. 15 d&#237;as</option><option value="30">&#218;lt. 30 d&#237;as</option><option value="60">&#218;lt. 60 d&#237;as</option><option value="90">&#218;lt. 90 d&#237;as</option><option value="SIN">Sin visita</option></select></div>
+      </div>
+      <div class="actions">
+        <button class="btn-reset" id="btnReset">Ver todo</button>
+        <button class="btn-lista" id="btnLista">Lista</button>
+        <button class="btn-csv" id="btnExport">XLSX</button>
+        <button class="btn-refresh" id="btnRefresh">Refrescar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -611,60 +596,53 @@ function exportXLSX(){
   XLSX.writeFile(wb,'pdv_cat_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 
-/* ---- Panel toggle logic ---- */
+/* ---- Panel toggle (height-based) ---- */
 var sheetF=document.getElementById('sheetFiltros');
 var sheetD=document.getElementById('sheetDetalles');
-var isMobile=window.innerWidth<768;
+var HEAD_H=42;
 
-function posDetalles(){
-  if(isMobile){
-    var hF=sheetF.offsetHeight||48;
-    sheetD.style.bottom=hF+'px';
-  }
+function openSheet(s,btn){
+  s.style.height='';s.style.maxHeight='70vh';
+  btn.textContent='Ocultar';
 }
-
-function toggleSheet(sheet,btn,closed){
-  if(closed){sheet.classList.remove('closed');btn.textContent='Ocultar'}
-  else{sheet.classList.add('closed');btn.textContent='Mostrar'}
-  if(isMobile)setTimeout(posDetalles,350);
+function closeSheet(s,btn){
+  s.style.height=HEAD_H+'px';s.style.maxHeight=HEAD_H+'px';
+  btn.textContent='Mostrar';
 }
+function isOpen(s){return parseInt(s.style.height)<=HEAD_H||s.style.height===HEAD_H+'px'?false:true}
 
 document.getElementById('btnFiltros').addEventListener('click',function(){
-  toggleSheet(sheetF,this,sheetF.classList.contains('closed'));
+  if(isOpen(sheetF))closeSheet(sheetF,this);else openSheet(sheetF,this);
 });
 document.getElementById('handleFiltros').addEventListener('click',function(){
-  var c=sheetF.classList.toggle('closed');
-  document.getElementById('btnFiltros').textContent=c?'Mostrar':'Ocultar';
-  if(isMobile)setTimeout(posDetalles,350);
+  var btn=document.getElementById('btnFiltros');
+  if(isOpen(sheetF))closeSheet(sheetF,btn);else openSheet(sheetF,btn);
 });
 document.getElementById('btnDetalles').addEventListener('click',function(){
-  toggleSheet(sheetD,this,sheetD.classList.contains('closed'));
+  if(isOpen(sheetD))closeSheet(sheetD,this);else openSheet(sheetD,this);
 });
 document.getElementById('handleDetalles').addEventListener('click',function(){
-  var c=sheetD.classList.toggle('closed');
-  document.getElementById('btnDetalles').textContent=c?'Mostrar':'Ocultar';
+  var btn=document.getElementById('btnDetalles');
+  if(isOpen(sheetD))closeSheet(sheetD,btn);else openSheet(sheetD,btn);
 });
 
-/* Sheet drag */
-function makeDraggable(sheet,handle,btnId){
+/* Drag */
+function makeDraggable(s,handle,btnId){
   var startY=0,startH=0,dragging=false;
-  handle.addEventListener('touchstart',function(e){dragging=true;startY=e.touches[0].clientY;startH=sheet.offsetHeight;sheet.classList.add('drag')},{passive:true});
+  handle.addEventListener('touchstart',function(e){dragging=true;startY=e.touches[0].clientY;startH=s.offsetHeight;s.classList.add('drag')},{passive:true});
   window.addEventListener('touchmove',function(e){
     if(!dragging)return;
     var dy=startY-e.touches[0].clientY;
-    sheet.style.maxHeight=Math.max(48,startH+dy)+'px';
-    if(isMobile)posDetalles();
+    s.style.height=Math.max(HEAD_H,startH+dy)+'px';s.style.maxHeight='none';
   },{passive:true});
   window.addEventListener('touchend',function(){
-    if(!dragging)return;dragging=false;sheet.classList.remove('drag');sheet.style.maxHeight='';
-    if(sheet.offsetHeight<120){sheet.classList.add('closed');document.getElementById(btnId).textContent='Mostrar'}
-    if(isMobile)posDetalles();
+    if(!dragging)return;dragging=false;s.classList.remove('drag');
+    if(s.offsetHeight<120){s.style.height=HEAD_H+'px';s.style.maxHeight=HEAD_H+'px';document.getElementById(btnId).textContent='Mostrar'}
+    else{s.style.height='';s.style.maxHeight='70vh'}
   });
 }
 makeDraggable(sheetF,document.getElementById('handleFiltros'),'btnFiltros');
 makeDraggable(sheetD,document.getElementById('handleDetalles'),'btnDetalles');
-
-window.addEventListener('resize',function(){isMobile=window.innerWidth<768;if(isMobile)posDetalles()});
 
 /* Filter events */
 var debounce=null;
@@ -698,7 +676,6 @@ document.addEventListener('keydown',function(e){
 });
 
 aplicarFiltro(true);
-if(isMobile)setTimeout(posDetalles,100);
 </script>
 </body>
 </html>
