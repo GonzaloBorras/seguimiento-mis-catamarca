@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 20/08/2026 21:55</title>
+<title>MIS Catamarca 2026 - 20/08/2026 21:59</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -298,6 +298,9 @@ body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;co
     <button class="pill" id="btnDetalles">Ocultar</button>
   </div>
     <div class="sheet-body" id="bodyDetalles">
+      <div id="volverWrap" style="display:none;margin-bottom:6px">
+        <button id="btnVolver" style="width:100%;padding:6px;font-size:11px;font-weight:600;border:none;border-radius:8px;background:#dbeafe;color:#1e40af;cursor:pointer">Volver a todos</button>
+      </div>
       <div class="avance-wrap" id="avanceWrap"></div>
       <div id="statsBody"></div>
     </div>
@@ -587,8 +590,8 @@ function actualizarLista(){
 }
 
 function irA(i){map.closePopup();document.getElementById('listaFs').classList.remove('show');map.setView([DATOS[i][0],DATOS[i][1]],16);setTimeout(function(){markers[i].openPopup()},300)}
-function irAVendedor(nombre){elS.value=nombre;aplicarFiltro(true)}
-function reset(){elS.value='ALL';elL.value='ALL';elC.value='ALL';elE.value='ALL';elA.value='ALL';elF.value='ALL';elB.value='';aplicarFiltro(true)}
+function irAVendedor(nombre){elS.value=nombre;aplicarFiltro(true);document.getElementById('volverWrap').style.display='block'}
+function reset(){elS.value='ALL';elL.value='ALL';elC.value='ALL';elE.value='ALL';elA.value='ALL';elF.value='ALL';elB.value='';document.getElementById('volverWrap').style.display='none';aplicarFiltro(true)}
 
 function exportXLSX(){
   var rows=[['ID','Nombre','Direccion','Vendedor','Localidad','Canal','Estado','Visitas','Ultima Visita','N Activo','N Activo 2','Lat','Lon']];
@@ -654,6 +657,7 @@ elB.addEventListener('keydown',function(e){if(e.key==='Enter')aplicarFiltro(true
 document.getElementById('btnLimpiar').addEventListener('click',function(){elB.value='';aplicarFiltro(true)});
 [elS,elL,elC,elE,elA,elF].forEach(function(s){s.addEventListener('change',function(){aplicarFiltro(true)})});
 document.getElementById('btnReset').addEventListener('click',reset);
+document.getElementById('btnVolver').addEventListener('click',function(){elS.value='ALL';document.getElementById('volverWrap').style.display='none';aplicarFiltro(true)});
 document.getElementById('btnExport').addEventListener('click',exportXLSX);
 document.getElementById('btnRefresh').addEventListener('click',function(){location.reload()});
 
