@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 20/08/2026 21:59</title>
+<title>MIS Catamarca 2026 - 20/08/2026 22:08</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -550,7 +550,7 @@ function aplicarFiltro(encuadrar){
   var vk=Object.keys(vs).sort();
   if(vk.length>1&&vk.length<=30){
     var sh='';
-    vk.forEach(function(n){var s=vs[n];var p=s.t>0?(s.v/s.t*100).toFixed(0):0;sh+='<div class="vbar"><div class="vbar-top"><span class="vbar-name" onclick="irAVendedor(\''+esc(n).replace(/'/g,"\'")+'\')">'+esc(n)+'</span><span>'+s.v+'/'+s.t+' ('+p+'%)</span></div><div class="vbar-track"><div class="vbar-fill" style="width:'+p+'%"></div></div></div>'});
+    vk.forEach(function(n){var s=vs[n];var p=s.t>0?(s.v/s.t*100).toFixed(0):0;var nn=n.replace(/'/g,"\\'");sh+='<div class="vbar"><div class="vbar-top"><span class="vbar-name" onclick="irAVendedor(\''+nn+'\')">'+esc(n)+'</span><span>'+s.v+'/'+s.t+' ('+p+'%)</span></div><div class="vbar-track"><div class="vbar-fill" style="width:'+p+'%"></div></div></div>'});
     elStats.innerHTML=sh;
   }else{elStats.innerHTML='<div style="color:#999">Sin datos</div>'}
   actualizarHeat(visiblesCache);
