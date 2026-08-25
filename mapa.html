@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 24/08/2026 22:55</title>
+<title>MIS Catamarca 2026 - 24/08/2026 22:59</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -50,8 +50,9 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
 /* --- Bottom stack --- */
 .bottom-stack{
   position:fixed;bottom:0;left:0;right:0;z-index:1000;
-  display:flex;flex-direction:column;
+  display:flex;flex-direction:column;pointer-events:none;
 }
+.bottom-stack .sheet{pointer-events:auto}
 
 /* --- Sheet (shared) --- */
 .sheet{
@@ -64,8 +65,9 @@ html,body,#map{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont
 .sheet.drag{transition:none}
 .sheet-handle{
   padding:8px 0 4px;display:flex;justify-content:center;align-items:center;
-  cursor:pointer;flex-shrink:0;
+  cursor:grab;flex-shrink:0;
 }
+.sheet-handle:active{cursor:grabbing}
 .sheet-handle::after{
   content:'';width:36px;height:4px;border-radius:2px;background:#d1d5db;
 }
@@ -624,35 +626,49 @@ function isOpen(s){return parseInt(s.style.height)<=HEAD_H||s.style.height===HEA
 document.getElementById('btnFiltros').addEventListener('click',function(){
   if(isOpen(sheetF))closeSheet(sheetF,this);else openSheet(sheetF,this);
 });
-document.getElementById('handleFiltros').addEventListener('click',function(){
-  var btn=document.getElementById('btnFiltros');
-  if(isOpen(sheetF))closeSheet(sheetF,btn);else openSheet(sheetF,btn);
-});
 document.getElementById('btnDetalles').addEventListener('click',function(){
   if(isOpen(sheetD))closeSheet(sheetD,this);else openSheet(sheetD,this);
 });
-document.getElementById('handleDetalles').addEventListener('click',function(){
-  var btn=document.getElementById('btnDetalles');
-  if(isOpen(sheetD))closeSheet(sheetD,btn);else openSheet(sheetD,btn);
-});
 
-/* Drag */
-function makeDraggable(s,handle,btnId){
-  var startY=0,startH=0,dragging=false;
-  handle.addEventListener('touchstart',function(e){dragging=true;startY=e.touches[0].clientY;startH=s.offsetHeight;s.classList.add('drag')},{passive:true});
-  window.addEventListener('touchmove',function(e){
+/* Move panels by dragging handle */
+function makeMovable(s,handle,btnId){
+  var sx=0,sy=0,ox=0,oy=0,moved=false,dragging=false;
+  function onStart(ex,ey){
+    dragging=true;moved=false;
+    var r=s.getBoundingClientRect();
+    ox=ex-r.left;oy=ey-r.top;
+    sx=r.left;sy=r.top;
+    s.style.position='fixed';s.style.left=sx+'px';s.style.top=sy+'px';
+    s.style.right='auto';s.style.bottom='auto';s.style.width=r.width+'px';
+    s.classList.add('drag');
+  }
+  function onMove(ex,ey){
     if(!dragging)return;
-    var dy=startY-e.touches[0].clientY;
-    s.style.height=Math.max(HEAD_H,startH+dy)+'px';s.style.maxHeight='none';
-  },{passive:true});
-  window.addEventListener('touchend',function(){
+    var dx=ex-sx-ox+sx;var dy=ey-sy-oy+sy;
+    if(Math.abs(ex-sx-ox)>3||Math.abs(ey-sy-oy)>3)moved=true;
+    s.style.left=Math.max(0,Math.min(window.innerWidth-s.offsetWidth,ex-ox))+'px';
+    s.style.top=Math.max(0,Math.min(window.innerHeight-s.offsetHeight,ey-oy))+'px';
+  }
+  function onEnd(){
     if(!dragging)return;dragging=false;s.classList.remove('drag');
-    if(s.offsetHeight<120){s.style.height=HEAD_H+'px';s.style.maxHeight=HEAD_H+'px';document.getElementById(btnId).textContent='Mostrar'}
-    else{s.style.height='';s.style.maxHeight='70vh'}
+  }
+  handle.addEventListener('touchstart',function(e){onStart(e.touches[0].clientX,e.touches[0].clientY)},{passive:true});
+  window.addEventListener('touchmove',function(e){if(dragging){e.preventDefault();onMove(e.touches[0].clientX,e.touches[0].clientY)}},{passive:false});
+  window.addEventListener('touchend',function(){
+    if(!dragging)return;
+    onEnd();
+    if(!moved){var btn=document.getElementById(btnId);if(isOpen(s))closeSheet(s,btn);else openSheet(s,btn)}
+  });
+  handle.addEventListener('mousedown',function(e){e.preventDefault();onStart(e.clientX,e.clientY)});
+  window.addEventListener('mousemove',function(e){if(dragging)onMove(e.clientX,e.clientY)});
+  window.addEventListener('mouseup',function(){
+    if(!dragging)return;
+    onEnd();
+    if(!moved){var btn=document.getElementById(btnId);if(isOpen(s))closeSheet(s,btn);else openSheet(s,btn)}
   });
 }
-makeDraggable(sheetF,document.getElementById('handleFiltros'),'btnFiltros');
-makeDraggable(sheetD,document.getElementById('handleDetalles'),'btnDetalles');
+makeMovable(sheetF,document.getElementById('handleFiltros'),'btnFiltros');
+makeMovable(sheetD,document.getElementById('handleDetalles'),'btnDetalles');
 
 /* Filter events */
 var debounce=null;
