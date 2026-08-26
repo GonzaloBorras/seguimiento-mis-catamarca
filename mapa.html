@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 26/08/2026 18:31</title>
+<title>MIS Catamarca 2026 - 26/08/2026 18:46</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -542,10 +542,10 @@ function aplicarFiltro(encuadrar){
   var pct=visiblesCache.length?(fv/visiblesCache.length*100).toFixed(1):0;
   document.getElementById('pctBadge').textContent=pct+'%';
   elKpi.innerHTML=
-    '<span class="kpi-chip total'+(elE.value==='ALL'?' active':'')+'" onclick="filtroEstado('ALL')">'+DATOS.length+' PDV</span>'+
-    '<span class="kpi-chip g'+(elE.value==='VIS'?' active':'')+'" onclick="filtroEstado('VIS')">'+fv+' visitados</span>'+
-    '<span class="kpi-chip r'+(elE.value==='PEND'?' active':'')+'" onclick="filtroEstado('PEND')">'+fp+' pend.</span>'+
-    (fr?'<span class="kpi-chip o'+(elE.value==='REV'?' active':'')+'" onclick="filtroEstado('REV')">'+fr+' revisar</span>':'');
+    '<span class="kpi-chip total'+(elE.value==='ALL'?' active':'')+'" onclick="filtroEstado(\'ALL\')">'+DATOS.length+' PDV</span>'+
+    '<span class="kpi-chip g'+(elE.value==='VIS'?' active':'')+'" onclick="filtroEstado(\'VIS\')">'+fv+' visitados</span>'+
+    '<span class="kpi-chip r'+(elE.value==='PEND'?' active':'')+'" onclick="filtroEstado(\'PEND\')">'+fp+' pend.</span>'+
+    (fr?'<span class="kpi-chip o'+(elE.value==='REV'?' active':'')+'" onclick="filtroEstado(\'REV\')">'+fr+' revisar</span>':'');
   elAvance.innerHTML='<div class="avance-track"><div class="avance-fill" style="width:'+pct+'%"></div><div class="avance-label">'+fv+' / '+visiblesCache.length+' ('+pct+'%)</div></div>';
   var vk=Object.keys(vs).sort();
   if(vk.length>1&&vk.length<=30){
