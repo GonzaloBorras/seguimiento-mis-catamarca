@@ -9,7 +9,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MIS Catamarca 2026 - 28/08/2026 10:21</title>
+<title>MIS Catamarca 2026 - 28/08/2026 10:28</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
@@ -272,6 +272,7 @@ body.dark .lista-fs-body .nm{color:#e5e7eb}
 body.dark .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#1f2937;color:#eee}
 body.dark .leaflet-popup-content a{color:#93c5fd}
 body.dark .leaflet-control-layers,body.dark .leaflet-bar a{background:#1f2937;color:#eee}
+body.dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9)}
 
 /* --- Desktop override --- */
 @media(min-width:768px){
@@ -420,9 +421,9 @@ var map=L.map('map',{zoomControl:false}).setView([-28.47,-65.78],12);
 L.control.zoom({position:'topright'}).addTo(map);
 
 var baseLayers={
-  'Claro':L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO'}),
+  'Claro':L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}),
   'Sat\u00e9lite':L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri'}),
-  'Oscuro':L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO'})
+  'Oscuro':L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'})
 };
 baseLayers['Claro'].addTo(map);
 L.control.layers(baseLayers,null,{position:'topright'}).addTo(map);
